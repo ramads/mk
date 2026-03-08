@@ -1,75 +1,141 @@
 body{
-font-family: 'Inter', sans-serif;
+
+font-family:'Inter',sans-serif;
 background:#f5f7fb;
 margin:0;
-color:#333;
+color:#1e293b;
 line-height:1.7;
+
 }
 
 header{
+
 background:#1e293b;
 color:white;
-padding:40px;
+padding:50px 20px;
 text-align:center;
+
+}
+
+header h1{
+
+margin:0;
+font-size:32px;
+
+}
+
+header p{
+
+opacity:0.8;
+
 }
 
 main{
+
 max-width:900px;
 margin:auto;
 padding:40px 20px;
-}
 
-h2{
-border-left:5px solid #2563eb;
-padding-left:10px;
-margin-top:40px;
 }
 
 section{
-margin-bottom:40px;
+
+margin-bottom:45px;
+
+}
+
+h2{
+
+border-left:5px solid #2563eb;
+padding-left:12px;
+margin-bottom:15px;
+
+}
+
+ul{
+
+padding-left:20px;
+
+}
+
+ol{
+
+padding-left:20px;
+
 }
 
 .result-box{
+
 background:#e2e8f0;
 padding:15px;
 border-radius:8px;
 margin-top:10px;
 font-weight:600;
-}
 
-pre{
-background:#0f172a;
-color:#e2e8f0;
-padding:20px;
-border-radius:10px;
-overflow-x:auto;
 }
 
 .code-container{
+
 position:relative;
-margin-top:15px;
+margin-top:20px;
+
 }
 
 .copy-btn{
+
 position:absolute;
 right:10px;
 top:10px;
-border:none;
 background:#2563eb;
 color:white;
+border:none;
 padding:6px 12px;
 border-radius:6px;
 cursor:pointer;
 font-size:12px;
+
 }
 
 .copy-btn:hover{
+
 background:#1d4ed8;
+
+}
+
+pre{
+
+border-radius:10px;
+font-size:14px;
+
+}
+
+code{
+
+font-family:"Fira Code",monospace;
+
 }
 
 footer{
+
 text-align:center;
 padding:30px;
 background:#e2e8f0;
 margin-top:40px;
+
+}
+
+@media(max-width:700px){
+
+header h1{
+
+font-size:24px;
+
+}
+
+main{
+
+padding:25px 15px;
+
+}
+
 }
