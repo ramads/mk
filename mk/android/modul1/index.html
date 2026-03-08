@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Modul Praktik Android - Input dan Button</title>
+
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<header>
+<h1>Modul Praktik Pemrograman Bergerak</h1>
+<p>Membuat Aplikasi Android Sederhana (Input Text dan Button)</p>
+</header>
+
+<main>
+
+<section>
+<h2>Tujuan Praktik</h2>
+
+<ul>
+<li>Memahami penggunaan EditText pada Android</li>
+<li>Memahami penggunaan Button</li>
+<li>Mengambil input dari user</li>
+<li>Menampilkan hasil proses ke TextView</li>
+<li>Menggunakan event klik pada button</li>
+</ul>
+</section>
+
+<section>
+<h2>Deskripsi Aplikasi</h2>
+
+<p>
+Aplikasi yang akan dibuat adalah aplikasi Android sederhana yang memungkinkan user
+menginputkan <b>nama</b> dan <b>kota asal</b>.
+</p>
+
+<p>
+Setelah tombol ditekan, aplikasi akan menampilkan pesan sapaan seperti berikut:
+</p>
+
+<div class="result-box">
+Halo Budi dari Mataram, selamat datang!
+</div>
+
+</section>
+
+<section>
+<h2>Struktur Project</h2>
+
+<pre>
+MainActivity.kt
+activity_main.xml
+</pre>
+
+</section>
+
+<section>
+<h2>1. Layout activity_main.xml</h2>
+
+<p>
+Layout ini menggunakan ConstraintLayout dengan komponen:
+</p>
+
+<ul>
+<li>2 EditText</li>
+<li>1 Button</li>
+<li>1 TextView</li>
+</ul>
+
+<div class="code-container">
+<button class="copy-btn">Copy</button>
+<pre><code>
+
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;androidx.constraintlayout.widget.ConstraintLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"&gt;
+
+&lt;EditText
+    android:id="@+id/etNama"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:hint="Masukkan Nama"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"/&gt;
+
+&lt;EditText
+    android:id="@+id/etKota"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:hint="Masukkan Kota Asal"
+    app:layout_constraintTop_toBottomOf="@id/etNama"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"/&gt;
+
+&lt;Button
+    android:id="@+id/btnSapa"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="Tampilkan Sapaan"
+    app:layout_constraintTop_toBottomOf="@id/etKota"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"/&gt;
+
+&lt;TextView
+    android:id="@+id/tvHasil"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Hasil akan muncul di sini"
+    android:textSize="18sp"
+    app:layout_constraintTop_toBottomOf="@id/btnSapa"
+    app:layout_constraintStart_toStartOf="parent"/&gt;
+
+&lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;
+
+</code></pre>
+</div>
+
+</section>
+
+<section>
+
+<h2>2. MainActivity.kt</h2>
+
+<p>
+Pada file ini kita mengambil input user lalu menampilkannya dalam bentuk teks sapaan.
+</p>
+
+<div class="code-container">
+<button class="copy-btn">Copy</button>
+
+<pre><code>
+
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+override fun onCreate(savedInstanceState: Bundle?) {
+
+super.onCreate(savedInstanceState)
+setContentView(R.layout.activity_main)
+
+val etNama: EditText = findViewById(R.id.etNama)
+val etKota: EditText = findViewById(R.id.etKota)
+val btnSapa: Button = findViewById(R.id.btnSapa)
+val tvHasil: TextView = findViewById(R.id.tvHasil)
+
+btnSapa.setOnClickListener {
+
+val nama = etNama.text.toString()
+val kota = etKota.text.toString()
+
+if (nama.isNotBlank() && kota.isNotBlank()) {
+
+val hasil = "Halo $nama dari $kota, selamat datang!"
+tvHasil.text = hasil
+
+} else {
+
+tvHasil.text = "Nama dan Kota tidak boleh kosong"
+
+}
+
+}
+
+}
+
+}
+
+</code></pre>
+</div>
+
+</section>
+
+<section>
+
+<h2>Alur Program</h2>
+
+<ol>
+<li>User mengisi nama</li>
+<li>User mengisi kota</li>
+<li>User menekan tombol</li>
+<li>Aplikasi membaca input</li>
+<li>Aplikasi menampilkan sapaan</li>
+</ol>
+
+</section>
+
+<section>
+
+<h2>Latihan Mandiri</h2>
+
+<p>Coba modifikasi aplikasi dengan menambahkan:</p>
+
+<ul>
+<li>Field input umur</li>
+<li>Validasi umur harus angka</li>
+<li>Tampilan output: <br>
+<b>Halo Budi (20 tahun) dari Mataram</b></li>
+</ul>
+
+</section>
+
+</main>
+
+<footer>
+<p>Modul Pemrograman Bergerak • Android Basic</p>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
