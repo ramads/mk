@@ -108,12 +108,14 @@
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="h-full gradient-bg text-gray-100 overflow-auto scrollbar-thin">
-  <div class="min-h-full p-4 md:p-8"><!-- Header -->
+  <div class="min-h-full p-4 md:p-8">
+   <!-- Header -->
    <header class="text-center mb-8 animate-slide">
     <h1 id="mainTitle" class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-3">Pemrograman Citra Digital</h1>
     <p class="text-gray-400 text-lg">Pembelajaran Interaktif: Histogram &amp; Konvolusi</p>
    </header><!-- Tab Navigation -->
-   <nav class="flex justify-center gap-2 mb-8"><button id="tabHistogram" onclick="switchTab('histogram')" class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 tab-active"> 📊 Histogram </button> <button id="tabConvolution" onclick="switchTab('convolution')" class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-slate-700/50 hover:bg-slate-600/50"> 🔄 Konvolusi </button>
+   <nav class="flex justify-center gap-2 mb-8">
+    <button id="tabHistogram" onclick="switchTab('histogram')" class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 tab-active"> 📊 Histogram </button> <button id="tabConvolution" onclick="switchTab('convolution')" class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-slate-700/50 hover:bg-slate-600/50"> 🔄 Konvolusi </button>
    </nav><!-- Histogram Section -->
    <section id="histogramSection" class="max-w-6xl mx-auto">
     <div class="card-gradient rounded-2xl p-6 shadow-2xl border border-slate-700/50 mb-6">
@@ -132,13 +134,15 @@
       <div>
        <h3 class="text-lg font-semibold text-amber-400 mb-3">📈 Grafik Histogram</h3>
        <div class="bg-slate-900/50 rounded-xl p-4">
-        <div id="histogramChart" class="h-48 flex items-end justify-center gap-1 border-b-2 border-l-2 border-slate-600 relative"><span class="absolute -left-8 top-0 text-xs text-gray-500">Frekuensi</span> <span class="absolute bottom-[-25px] right-0 text-xs text-gray-500">Intensitas</span>
+        <div id="histogramChart" class="h-48 flex items-end justify-center gap-1 border-b-2 border-l-2 border-slate-600 relative">
+         <span class="absolute -left-8 top-0 text-xs text-gray-500">Frekuensi</span> <span class="absolute bottom-[-25px] right-0 text-xs text-gray-500">Intensitas</span>
         </div>
         <div id="histogramLabels" class="flex justify-center gap-1 mt-1 text-xs text-gray-500"></div>
        </div>
       </div>
      </div><!-- Animation Controls -->
-     <div class="mt-6 flex flex-wrap gap-3 justify-center"><button onclick="startHistogramAnimation()" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"> ▶️ Mulai Animasi Histogram </button> <button onclick="calculateHistogramInstant()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-all"> ⚡ Hitung Langsung </button>
+     <div class="mt-6 flex flex-wrap gap-3 justify-center">
+      <button onclick="startHistogramAnimation()" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"> ▶️ Mulai Animasi Histogram </button> <button onclick="calculateHistogramInstant()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-all"> ⚡ Hitung Langsung </button>
      </div><!-- Calculation Steps -->
      <div id="histCalcSteps" class="mt-6 bg-slate-800/50 rounded-xl p-4 hidden">
       <h3 class="text-lg font-semibold text-cyan-400 mb-3">📝 Langkah Perhitungan</h3>
@@ -167,10 +171,12 @@
      <div class="bg-slate-800/50 rounded-xl p-4 mb-6">
       <h3 class="text-lg font-semibold text-purple-300 mb-2">📖 Apa itu Konvolusi?</h3>
       <p class="text-gray-300 leading-relaxed mb-3"><strong>Konvolusi</strong> adalah operasi matematis yang menggeser sebuah <em>kernel (filter)</em> di atas citra untuk menghasilkan citra baru. Setiap pixel hasil dihitung dengan menjumlahkan perkalian antara nilai pixel tetangga dengan bobot kernel.</p>
-      <div class="mono text-sm bg-slate-900/50 p-3 rounded-lg"><strong>Rumus:</strong> g(x,y) = Σ Σ f(x+i, y+j) × h(i,j)
+      <div class="mono text-sm bg-slate-900/50 p-3 rounded-lg">
+       <strong>Rumus:</strong> g(x,y) = Σ Σ f(x+i, y+j) × h(i,j)
       </div>
      </div>
-     <div class="grid lg:grid-cols-3 gap-6"><!-- Input Image -->
+     <div class="grid lg:grid-cols-3 gap-6">
+      <!-- Input Image -->
       <div>
        <h3 class="text-lg font-semibold text-emerald-400 mb-3">🖼️ Citra Input f(x) - 5×5</h3>
        <div class="bg-slate-900/50 rounded-xl p-4">
@@ -183,7 +189,8 @@
        <h3 class="text-lg font-semibold text-amber-400 mb-3">⚙️ Kernel g(x) - 3×3</h3>
        <div class="bg-slate-900/50 rounded-xl p-4">
         <div id="kernelGrid" class="grid grid-cols-3 gap-1 mb-4"></div>
-        <div class="flex gap-2"><button onclick="setSharpnessKernel()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm transition-all flex-1"> 🔪 Sharpen </button> <button onclick="setBlurKernel()" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-sm transition-all flex-1"> 🌫️ Blur </button>
+        <div class="flex gap-2">
+         <button onclick="setSharpnessKernel()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm transition-all flex-1"> 🔪 Sharpen </button> <button onclick="setBlurKernel()" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-sm transition-all flex-1"> 🌫️ Blur </button>
         </div>
        </div>
       </div><!-- Output Image -->
@@ -195,7 +202,8 @@
        </div>
       </div>
      </div><!-- Animation Controls -->
-     <div class="mt-6 flex flex-wrap gap-3 justify-center"><button onclick="startConvolutionAnimation()" class="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"> ▶️ Mulai Animasi Konvolusi </button> <button onclick="calculateConvolutionInstant()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-all"> ⚡ Hitung Langsung </button> <button onclick="stopAnimation()" class="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-semibold transition-all"> ⏹️ Stop </button>
+     <div class="mt-6 flex flex-wrap gap-3 justify-center">
+      <button id="playConvBtn" onclick="startConvolutionAnimation()" class="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"> ▶️ Mulai Animasi Konvolusi </button> <button id="pauseConvBtn" onclick="togglePauseAnimation()" class="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 rounded-xl font-semibold transition-all hidden"> ⏸️ Pause </button> <button onclick="calculateConvolutionInstant()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-all"> ⚡ Hitung Langsung </button> <button onclick="stopAnimation()" class="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-semibold transition-all"> ⏹️ Stop </button>
      </div><!-- Current Calculation Display -->
      <div id="convCalcDisplay" class="mt-6 bg-slate-800/50 rounded-xl p-4 hidden">
       <h3 class="text-lg font-semibold text-cyan-400 mb-3">🧮 Perhitungan Saat Ini</h3>
@@ -247,6 +255,9 @@
     let outputImage = [[0,0,0],[0,0,0],[0,0,0]];
     let animationId = null;
     let isAnimating = false;
+    let isPaused = false;
+    let maxIntensity = 255; // Default for 8-bit images
+    let pausedState = null; // To store pause state
 
     // Initialize Element SDK
     if (window.elementSdk) {
@@ -316,7 +327,7 @@
 
     // Get intensity color
     function getIntensityColor(value) {
-      const maxVal = 8;
+      const maxVal = maxIntensity;
       const normalized = Math.min(value / maxVal, 1);
       const hue = 200 + normalized * 60;
       const lightness = 30 + normalized * 40;
@@ -376,7 +387,7 @@
           cell.value = convolutionImage[i][j];
           cell.className = 'pixel-cell w-9 h-9 md:w-11 md:h-11 text-center rounded-lg font-bold mono text-sm border-2 border-slate-600 focus:border-purple-400 focus:outline-none transition-all';
           cell.style.backgroundColor = getIntensityColor(convolutionImage[i][j]);
-          cell.style.color = convolutionImage[i][j] > 4 ? '#fff' : '#1e293b';
+          cell.style.color = convolutionImage[i][j] > maxIntensity / 2 ? '#fff' : '#1e293b';
           cell.id = `conv-cell-${i}-${j}`;
           cell.dataset.row = i;
           cell.dataset.col = j;
@@ -385,7 +396,7 @@
             e.target.value = val;
             convolutionImage[e.target.dataset.row][e.target.dataset.col] = val;
             e.target.style.backgroundColor = getIntensityColor(val);
-            e.target.style.color = val > 4 ? '#fff' : '#1e293b';
+            e.target.style.color = val > maxIntensity / 2 ? '#fff' : '#1e293b';
           });
           grid.appendChild(cell);
         }
@@ -621,8 +632,21 @@
 
     // Convolution animation
     async function startConvolutionAnimation() {
-      if (isAnimating) return;
+      if (isAnimating && !isPaused) return;
+      
+      if (isPaused) {
+        // Resume from pause
+        isPaused = false;
+        document.getElementById('playConvBtn').classList.add('hidden');
+        document.getElementById('pauseConvBtn').classList.remove('hidden');
+        await resumeConvolutionAnimation();
+        return;
+      }
+      
       isAnimating = true;
+      isPaused = false;
+      document.getElementById('playConvBtn').classList.add('hidden');
+      document.getElementById('pauseConvBtn').classList.remove('hidden');
       
       const calcDisplay = document.getElementById('convCalcDisplay');
       const calcContent = document.getElementById('convCalcContent');
@@ -645,6 +669,11 @@
       
       for (let oi = 0; oi < 3; oi++) {
         for (let oj = 0; oj < 3; oj++) {
+          // Wait if paused
+          while (isPaused && isAnimating) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+          
           if (!isAnimating) {
             overlay.style.opacity = '0';
             return;
@@ -680,8 +709,8 @@
           calcStr += `<p class="text-gray-300">${terms.join(' + ')}</p>`;
           calcStr += `<p class="text-yellow-400">= ${sum}</p>`;
           
-          // Apply clipping (0-255)
-          const clippedSum = Math.max(0, Math.min(255, sum));
+          // Apply clipping (0 to maxIntensity)
+          const clippedSum = Math.max(0, Math.min(maxIntensity, sum));
           const wasClipped = sum !== clippedSum;
           
           if (wasClipped) {
@@ -722,8 +751,126 @@
       overlay.classList.remove('animate-kernel');
       overlay.style.opacity = '0';
       isAnimating = false;
+      isPaused = false;
+      
+      document.getElementById('playConvBtn').classList.remove('hidden');
+      document.getElementById('pauseConvBtn').classList.add('hidden');
       
       calcContent.innerHTML = '<p class="text-emerald-400 font-bold">✅ Konvolusi selesai!</p>';
+    }
+
+    // Resume convolution animation from pause
+    async function resumeConvolutionAnimation() {
+      if (!pausedState) return;
+      
+      const { oi, oj, cellWidth } = pausedState;
+      const overlay = document.getElementById('kernelOverlay');
+      const calcDisplay = document.getElementById('convCalcDisplay');
+      const calcContent = document.getElementById('convCalcContent');
+      const allStepsDiv = document.getElementById('convAllSteps');
+      const stepsContent = document.getElementById('convStepsContent');
+      
+      // Continue from the paused position
+      for (let row = oi; row < 3; row++) {
+        for (let col = oj; col < 3; col++) {
+          while (isPaused && isAnimating) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+          
+          if (!isAnimating) {
+            overlay.style.opacity = '0';
+            return;
+          }
+          
+          overlay.style.left = `${col * cellWidth}px`;
+          overlay.style.top = `${row * cellWidth}px`;
+          
+          for (let ki = 0; ki < 3; ki++) {
+            for (let kj = 0; kj < 3; kj++) {
+              const cell = document.getElementById(`conv-cell-${row + ki}-${col + kj}`);
+              if (cell) cell.style.borderColor = '#3b82f6';
+            }
+          }
+          
+          let sum = 0;
+          let calcStr = `<p class="text-purple-400 font-bold">📍 Posisi Output [${row},${col}]:</p>`;
+          let terms = [];
+          
+          for (let ki = 0; ki < 3; ki++) {
+            for (let kj = 0; kj < 3; kj++) {
+              const imgVal = convolutionImage[row + ki][col + kj];
+              const kernelVal = kernel[ki][kj];
+              const product = imgVal * kernelVal;
+              sum += product;
+              terms.push(`(${imgVal}×${kernelVal})`);
+            }
+          }
+          
+          calcStr += `<p class="text-gray-300">${terms.join(' + ')}</p>`;
+          calcStr += `<p class="text-yellow-400">= ${sum}</p>`;
+          
+          const clippedSum = Math.max(0, Math.min(maxIntensity, sum));
+          const wasClipped = sum !== clippedSum;
+          
+          if (wasClipped) {
+            calcStr += `<p class="text-red-400">⚠️ Clipping: ${sum} → <span class="text-green-400">${clippedSum}</span></p>`;
+          } else {
+            calcStr += `<p class="text-green-400">✓ Nilai final: ${clippedSum}</p>`;
+          }
+          
+          calcContent.innerHTML = calcStr;
+          
+          const stepDiv = document.createElement('div');
+          stepDiv.className = 'bg-slate-900/50 rounded-lg p-3 mb-2';
+          stepDiv.innerHTML = calcStr;
+          stepsContent.appendChild(stepDiv);
+          stepsContent.scrollTop = stepsContent.scrollHeight;
+          
+          outputImage[row][col] = clippedSum;
+          const outputCell = document.getElementById(`output-cell-${row}-${col}`);
+          outputCell.textContent = clippedSum;
+          outputCell.style.backgroundColor = getOutputColor(clippedSum);
+          outputCell.style.color = '#fff';
+          outputCell.classList.add('animate-highlight');
+          
+          await new Promise(resolve => setTimeout(resolve, 800));
+          
+          for (let ki = 0; ki < 3; ki++) {
+            for (let kj = 0; kj < 3; kj++) {
+              const cell = document.getElementById(`conv-cell-${row + ki}-${col + kj}`);
+              if (cell) cell.style.borderColor = '#475569';
+            }
+          }
+        }
+      }
+      
+      overlay.classList.remove('animate-kernel');
+      overlay.style.opacity = '0';
+      isAnimating = false;
+      isPaused = false;
+      pausedState = null;
+      
+      document.getElementById('playConvBtn').classList.remove('hidden');
+      document.getElementById('pauseConvBtn').classList.add('hidden');
+      
+      calcContent.innerHTML = '<p class="text-emerald-400 font-bold">✅ Konvolusi selesai!</p>';
+    }
+
+    // Toggle pause animation
+    function togglePauseAnimation() {
+      if (!isAnimating) return;
+      
+      isPaused = !isPaused;
+      const playBtn = document.getElementById('playConvBtn');
+      const pauseBtn = document.getElementById('pauseConvBtn');
+      
+      if (isPaused) {
+        pauseBtn.textContent = '▶️ Lanjutkan';
+        pauseBtn.className = 'px-6 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-semibold transition-all';
+      } else {
+        pauseBtn.textContent = '⏸️ Pause';
+        pauseBtn.className = 'px-6 py-3 bg-yellow-600 hover:bg-yellow-500 rounded-xl font-semibold transition-all';
+      }
     }
 
     // Instant convolution calculation
@@ -756,7 +903,7 @@
           
           calcStr += `<p class="text-sm">${terms.join(' + ')} = <span class="text-yellow-400">${sum}</span></p>`;
           
-          const clippedSum = Math.max(0, Math.min(255, sum));
+          const clippedSum = Math.max(0, Math.min(maxIntensity, sum));
           if (sum !== clippedSum) {
             calcStr += `<p class="text-red-400 text-sm">Clipping: ${sum} → <span class="text-green-400">${clippedSum}</span></p>`;
           }
@@ -779,9 +926,16 @@
     // Stop animation
     function stopAnimation() {
       isAnimating = false;
+      isPaused = false;
+      pausedState = null;
       const overlay = document.getElementById('kernelOverlay');
       overlay.classList.remove('animate-kernel');
       overlay.style.opacity = '0';
+      
+      document.getElementById('playConvBtn').classList.remove('hidden');
+      document.getElementById('pauseConvBtn').classList.add('hidden');
+      document.getElementById('pauseConvBtn').textContent = '⏸️ Pause';
+      document.getElementById('pauseConvBtn').className = 'px-6 py-3 bg-yellow-600 hover:bg-yellow-500 rounded-xl font-semibold transition-all hidden';
     }
 
     // Initialize everything on load
@@ -794,5 +948,5 @@
 
     initialize();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9da3503d42aac649',t:'MTc3MzE1NjEzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9da363ff62ef4b1b',t:'MTc3MzE1Njk0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
