@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pembelajaran Pemrograman Citra Digital</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;family=Outfit:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Outfit', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    @keyframes kernelMove {
+      0% { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); }
+      50% { box-shadow: 0 0 20px 5px rgba(59, 130, 246, 0.8); }
+      100% { box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); }
+    }
+    
+    @keyframes barGrow {
+      from { transform: scaleY(0); }
+      to { transform: scaleY(1); }
+    }
+    
+    @keyframes fadeHighlight {
+      0% { background-color: rgba(251, 191, 36, 0.8); }
+      100% { background-color: transparent; }
+    }
+    
+    .animate-slide { animation: slideIn 0.6s ease-out forwards; }
+    .animate-pulse-custom { animation: pulse 2s ease-in-out infinite; }
+    .animate-kernel { animation: kernelMove 1s ease-in-out infinite; }
+    .animate-bar { animation: barGrow 0.5s ease-out forwards; transform-origin: bottom; }
+    .animate-highlight { animation: fadeHighlight 1s ease-out; }
+    
+    .pixel-cell {
+      transition: all 0.3s ease;
+    }
+    
+    .pixel-cell:hover {
+      transform: scale(1.1);
+      z-index: 10;
+    }
+    
+    .kernel-overlay {
+      pointer-events: none;
+      transition: all 0.4s ease;
+    }
+    
+    .histogram-bar {
+      transition: height 0.3s ease;
+    }
+    
+    .tab-active {
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      color: white;
+    }
+    
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    }
+    
+    .card-gradient {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+    }
+    
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+    
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full gradient-bg text-gray-100 overflow-auto scrollbar-thin">
+  <div class="min-h-full p-4 md:p-8"><!-- Header -->
+   <header class="text-center mb-8 animate-slide">
+    <h1 id="mainTitle" class="text-3xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-3">Pemrograman Citra Digital</h1>
+    <p class="text-gray-400 text-lg">Pembelajaran Interaktif: Histogram &amp; Konvolusi</p>
+   </header><!-- Tab Navigation -->
+   <nav class="flex justify-center gap-2 mb-8"><button id="tabHistogram" onclick="switchTab('histogram')" class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 tab-active"> 📊 Histogram </button> <button id="tabConvolution" onclick="switchTab('convolution')" class="px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-slate-700/50 hover:bg-slate-600/50"> 🔄 Konvolusi </button>
+   </nav><!-- Histogram Section -->
+   <section id="histogramSection" class="max-w-6xl mx-auto">
+    <div class="card-gradient rounded-2xl p-6 shadow-2xl border border-slate-700/50 mb-6">
+     <h2 id="histogramTitle" class="text-2xl font-bold text-blue-400 mb-4 flex items-center gap-2"><span class="text-3xl">📊</span> Analisis Histogram</h2>
+     <div class="bg-slate-800/50 rounded-xl p-4 mb-6">
+      <h3 class="text-lg font-semibold text-purple-300 mb-2">📖 Apa itu Histogram?</h3>
+      <p class="text-gray-300 leading-relaxed"><strong>Histogram</strong> adalah representasi grafis yang menunjukkan <em>distribusi frekuensi</em> nilai intensitas pixel dalam sebuah citra digital. Sumbu horizontal menunjukkan nilai intensitas (0-255 untuk citra 8-bit), sedangkan sumbu vertikal menunjukkan jumlah pixel yang memiliki nilai intensitas tersebut.</p>
+     </div><!-- Image Input Grid -->
+     <div class="grid lg:grid-cols-2 gap-6">
+      <div>
+       <h3 class="text-lg font-semibold text-emerald-400 mb-3">🖼️ Input Citra f(x) - 5×5 Pixel</h3>
+       <div class="bg-slate-900/50 rounded-xl p-4">
+        <div id="histImageGrid" class="grid grid-cols-5 gap-1 mb-4"></div><button onclick="resetHistogramImage()" class="px-4 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-sm transition-all"> 🔄 Reset ke Default </button>
+       </div>
+      </div>
+      <div>
+       <h3 class="text-lg font-semibold text-amber-400 mb-3">📈 Grafik Histogram</h3>
+       <div class="bg-slate-900/50 rounded-xl p-4">
+        <div id="histogramChart" class="h-48 flex items-end justify-center gap-1 border-b-2 border-l-2 border-slate-600 relative"><span class="absolute -left-8 top-0 text-xs text-gray-500">Frekuensi</span> <span class="absolute bottom-[-25px] right-0 text-xs text-gray-500">Intensitas</span>
+        </div>
+        <div id="histogramLabels" class="flex justify-center gap-1 mt-1 text-xs text-gray-500"></div>
+       </div>
+      </div>
+     </div><!-- Animation Controls -->
+     <div class="mt-6 flex flex-wrap gap-3 justify-center"><button onclick="startHistogramAnimation()" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"> ▶️ Mulai Animasi Histogram </button> <button onclick="calculateHistogramInstant()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-all"> ⚡ Hitung Langsung </button>
+     </div><!-- Calculation Steps -->
+     <div id="histCalcSteps" class="mt-6 bg-slate-800/50 rounded-xl p-4 hidden">
+      <h3 class="text-lg font-semibold text-cyan-400 mb-3">📝 Langkah Perhitungan</h3>
+      <div id="histStepsContent" class="mono text-sm text-gray-300 space-y-2 max-h-64 overflow-y-auto scrollbar-thin"></div>
+     </div><!-- Results Table -->
+     <div id="histResultTable" class="mt-6 hidden">
+      <h3 class="text-lg font-semibold text-pink-400 mb-3">📋 Tabel Distribusi Histogram</h3>
+      <div class="overflow-x-auto">
+       <table class="w-full text-sm">
+        <thead class="bg-slate-700/50">
+         <tr>
+          <th class="px-3 py-2 text-left">Intensitas</th>
+          <th class="px-3 py-2 text-left">Frekuensi</th>
+          <th class="px-3 py-2 text-left">Persentase</th>
+         </tr>
+        </thead>
+        <tbody id="histTableBody" class="divide-y divide-slate-700"></tbody>
+       </table>
+      </div>
+     </div>
+    </div>
+   </section><!-- Convolution Section -->
+   <section id="convolutionSection" class="max-w-6xl mx-auto hidden">
+    <div class="card-gradient rounded-2xl p-6 shadow-2xl border border-slate-700/50 mb-6">
+     <h2 id="convolutionTitle" class="text-2xl font-bold text-purple-400 mb-4 flex items-center gap-2"><span class="text-3xl">🔄</span> Operasi Konvolusi</h2>
+     <div class="bg-slate-800/50 rounded-xl p-4 mb-6">
+      <h3 class="text-lg font-semibold text-purple-300 mb-2">📖 Apa itu Konvolusi?</h3>
+      <p class="text-gray-300 leading-relaxed mb-3"><strong>Konvolusi</strong> adalah operasi matematis yang menggeser sebuah <em>kernel (filter)</em> di atas citra untuk menghasilkan citra baru. Setiap pixel hasil dihitung dengan menjumlahkan perkalian antara nilai pixel tetangga dengan bobot kernel.</p>
+      <div class="mono text-sm bg-slate-900/50 p-3 rounded-lg"><strong>Rumus:</strong> g(x,y) = Σ Σ f(x+i, y+j) × h(i,j)
+      </div>
+     </div>
+     <div class="grid lg:grid-cols-3 gap-6"><!-- Input Image -->
+      <div>
+       <h3 class="text-lg font-semibold text-emerald-400 mb-3">🖼️ Citra Input f(x) - 5×5</h3>
+       <div class="bg-slate-900/50 rounded-xl p-4">
+        <div id="convImageGrid" class="grid grid-cols-5 gap-1 mb-4 relative">
+         <div id="kernelOverlay" class="kernel-overlay absolute border-4 border-blue-500 rounded-lg opacity-0" style="width: calc(60% + 8px); height: calc(60% + 8px);"></div>
+        </div><button onclick="resetConvolutionImage()" class="px-3 py-2 bg-slate-600 hover:bg-slate-500 rounded-lg text-sm transition-all"> 🔄 Reset </button>
+       </div>
+      </div><!-- Kernel -->
+      <div>
+       <h3 class="text-lg font-semibold text-amber-400 mb-3">⚙️ Kernel g(x) - 3×3</h3>
+       <div class="bg-slate-900/50 rounded-xl p-4">
+        <div id="kernelGrid" class="grid grid-cols-3 gap-1 mb-4"></div>
+        <div class="flex gap-2"><button onclick="setSharpnessKernel()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm transition-all flex-1"> 🔪 Sharpen </button> <button onclick="setBlurKernel()" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-sm transition-all flex-1"> 🌫️ Blur </button>
+        </div>
+       </div>
+      </div><!-- Output Image -->
+      <div>
+       <h3 class="text-lg font-semibold text-pink-400 mb-3">✨ Hasil Konvolusi - 3×3</h3>
+       <div class="bg-slate-900/50 rounded-xl p-4">
+        <div id="outputGrid" class="grid grid-cols-3 gap-1 mb-4"></div>
+        <p class="text-xs text-gray-500">* Ukuran output: (5-3+1) × (5-3+1) = 3×3</p>
+       </div>
+      </div>
+     </div><!-- Animation Controls -->
+     <div class="mt-6 flex flex-wrap gap-3 justify-center"><button onclick="startConvolutionAnimation()" class="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"> ▶️ Mulai Animasi Konvolusi </button> <button onclick="calculateConvolutionInstant()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-semibold transition-all"> ⚡ Hitung Langsung </button> <button onclick="stopAnimation()" class="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-xl font-semibold transition-all"> ⏹️ Stop </button>
+     </div><!-- Current Calculation Display -->
+     <div id="convCalcDisplay" class="mt-6 bg-slate-800/50 rounded-xl p-4 hidden">
+      <h3 class="text-lg font-semibold text-cyan-400 mb-3">🧮 Perhitungan Saat Ini</h3>
+      <div id="convCalcContent" class="mono text-sm space-y-2"></div>
+     </div><!-- All Calculation Steps -->
+     <div id="convAllSteps" class="mt-6 bg-slate-800/50 rounded-xl p-4 hidden">
+      <h3 class="text-lg font-semibold text-yellow-400 mb-3">📝 Semua Langkah Perhitungan dengan Clipping</h3>
+      <div id="convStepsContent" class="mono text-sm text-gray-300 space-y-3 max-h-96 overflow-y-auto scrollbar-thin"></div>
+     </div>
+    </div>
+   </section><!-- Footer -->
+   <footer class="text-center mt-8 text-gray-500 text-sm">
+    <p>💡 Pembelajaran Interaktif Pemrograman Citra Digital</p>
+   </footer>
+  </div>
+  <script>
+    // Default configuration
+    const defaultConfig = {
+      main_title: 'Pemrograman Citra Digital',
+      histogram_title: 'Analisis Histogram',
+      convolution_title: 'Operasi Konvolusi',
+      background_color: '#0f172a',
+      surface_color: '#1e293b',
+      text_color: '#f1f5f9',
+      primary_action: '#3b82f6',
+      secondary_action: '#8b5cf6'
+    };
+
+    // Default image data (as specified in the request)
+    const defaultImageData = [
+      [0, 5, 2, 1, 5],
+      [6, 6, 2, 3, 4],
+      [5, 6, 7, 6, 2],
+      [1, 5, 0, 4, 4],
+      [0, 0, 2, 3, 0]
+    ];
+
+    // Default kernel (sharpening filter as specified)
+    const defaultKernel = [
+      [0, -1, 0],
+      [-1, 5, -1],
+      [0, -1, 0]
+    ];
+
+    // State variables
+    let histogramImage = JSON.parse(JSON.stringify(defaultImageData));
+    let convolutionImage = JSON.parse(JSON.stringify(defaultImageData));
+    let kernel = JSON.parse(JSON.stringify(defaultKernel));
+    let outputImage = [[0,0,0],[0,0,0],[0,0,0]];
+    let animationId = null;
+    let isAnimating = false;
+
+    // Initialize Element SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          document.getElementById('mainTitle').textContent = config.main_title || defaultConfig.main_title;
+          document.getElementById('histogramTitle').innerHTML = `<span class="text-3xl">📊</span> ${config.histogram_title || defaultConfig.histogram_title}`;
+          document.getElementById('convolutionTitle').innerHTML = `<span class="text-3xl">🔄</span> ${config.convolution_title || defaultConfig.convolution_title}`;
+          
+          document.body.style.background = `linear-gradient(135deg, ${config.background_color || defaultConfig.background_color} 0%, ${config.surface_color || defaultConfig.surface_color} 100%)`;
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); }
+            },
+            {
+              get: () => config.primary_action || defaultConfig.primary_action,
+              set: (v) => { config.primary_action = v; window.elementSdk.setConfig({ primary_action: v }); }
+            },
+            {
+              get: () => config.secondary_action || defaultConfig.secondary_action,
+              set: (v) => { config.secondary_action = v; window.elementSdk.setConfig({ secondary_action: v }); }
+            }
+          ],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['main_title', config.main_title || defaultConfig.main_title],
+          ['histogram_title', config.histogram_title || defaultConfig.histogram_title],
+          ['convolution_title', config.convolution_title || defaultConfig.convolution_title]
+        ])
+      });
+    }
+
+    // Tab switching
+    function switchTab(tab) {
+      const histSection = document.getElementById('histogramSection');
+      const convSection = document.getElementById('convolutionSection');
+      const tabHist = document.getElementById('tabHistogram');
+      const tabConv = document.getElementById('tabConvolution');
+
+      if (tab === 'histogram') {
+        histSection.classList.remove('hidden');
+        convSection.classList.add('hidden');
+        tabHist.className = 'px-6 py-3 rounded-xl font-semibold transition-all duration-300 tab-active';
+        tabConv.className = 'px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-slate-700/50 hover:bg-slate-600/50';
+      } else {
+        histSection.classList.add('hidden');
+        convSection.classList.remove('hidden');
+        tabConv.className = 'px-6 py-3 rounded-xl font-semibold transition-all duration-300 tab-active';
+        tabHist.className = 'px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-slate-700/50 hover:bg-slate-600/50';
+      }
+    }
+
+    // Get intensity color
+    function getIntensityColor(value) {
+      const maxVal = 8;
+      const normalized = Math.min(value / maxVal, 1);
+      const hue = 200 + normalized * 60;
+      const lightness = 30 + normalized * 40;
+      return `hsl(${hue}, 70%, ${lightness}%)`;
+    }
+
+    // Get output color (handles negative values)
+    function getOutputColor(value) {
+      if (value < 0) {
+        return `hsl(0, 70%, ${50 + Math.abs(value) / 10}%)`;
+      }
+      const normalized = Math.min(value / 50, 1);
+      return `hsl(${120 + normalized * 60}, 60%, ${40 + normalized * 30}%)`;
+    }
+
+    // Initialize histogram image grid
+    function initHistogramGrid() {
+      const grid = document.getElementById('histImageGrid');
+      grid.innerHTML = '';
+      
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+          const cell = document.createElement('input');
+          cell.type = 'number';
+          cell.min = '0';
+          cell.max = '255';
+          cell.value = histogramImage[i][j];
+          cell.className = 'pixel-cell w-10 h-10 md:w-12 md:h-12 text-center rounded-lg font-bold mono text-sm border-2 border-slate-600 focus:border-blue-400 focus:outline-none transition-all';
+          cell.style.backgroundColor = getIntensityColor(histogramImage[i][j]);
+          cell.style.color = histogramImage[i][j] > 4 ? '#fff' : '#1e293b';
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          cell.addEventListener('change', (e) => {
+            const val = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+            e.target.value = val;
+            histogramImage[e.target.dataset.row][e.target.dataset.col] = val;
+            e.target.style.backgroundColor = getIntensityColor(val);
+            e.target.style.color = val > 4 ? '#fff' : '#1e293b';
+          });
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    // Initialize convolution image grid
+    function initConvolutionGrid() {
+      const grid = document.getElementById('convImageGrid');
+      const existingOverlay = document.getElementById('kernelOverlay');
+      grid.innerHTML = '';
+      
+      for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+          const cell = document.createElement('input');
+          cell.type = 'number';
+          cell.min = '0';
+          cell.max = '255';
+          cell.value = convolutionImage[i][j];
+          cell.className = 'pixel-cell w-9 h-9 md:w-11 md:h-11 text-center rounded-lg font-bold mono text-sm border-2 border-slate-600 focus:border-purple-400 focus:outline-none transition-all';
+          cell.style.backgroundColor = getIntensityColor(convolutionImage[i][j]);
+          cell.style.color = convolutionImage[i][j] > 4 ? '#fff' : '#1e293b';
+          cell.id = `conv-cell-${i}-${j}`;
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          cell.addEventListener('change', (e) => {
+            const val = Math.max(0, Math.min(255, parseInt(e.target.value) || 0));
+            e.target.value = val;
+            convolutionImage[e.target.dataset.row][e.target.dataset.col] = val;
+            e.target.style.backgroundColor = getIntensityColor(val);
+            e.target.style.color = val > 4 ? '#fff' : '#1e293b';
+          });
+          grid.appendChild(cell);
+        }
+      }
+      
+      // Re-add kernel overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'kernelOverlay';
+      overlay.className = 'kernel-overlay absolute border-4 border-blue-500 rounded-lg opacity-0';
+      overlay.style.width = 'calc(60% + 8px)';
+      overlay.style.height = 'calc(60% + 8px)';
+      grid.appendChild(overlay);
+    }
+
+    // Initialize kernel grid
+    function initKernelGrid() {
+      const grid = document.getElementById('kernelGrid');
+      grid.innerHTML = '';
+      
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          const cell = document.createElement('input');
+          cell.type = 'number';
+          cell.value = kernel[i][j];
+          cell.className = 'pixel-cell w-12 h-12 text-center rounded-lg font-bold mono text-sm border-2 border-amber-600 focus:border-amber-400 focus:outline-none transition-all bg-slate-800';
+          cell.style.color = kernel[i][j] < 0 ? '#f87171' : kernel[i][j] > 1 ? '#4ade80' : '#fff';
+          cell.dataset.row = i;
+          cell.dataset.col = j;
+          cell.addEventListener('change', (e) => {
+            const val = parseInt(e.target.value) || 0;
+            e.target.value = val;
+            kernel[e.target.dataset.row][e.target.dataset.col] = val;
+            e.target.style.color = val < 0 ? '#f87171' : val > 1 ? '#4ade80' : '#fff';
+          });
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    // Initialize output grid
+    function initOutputGrid() {
+      const grid = document.getElementById('outputGrid');
+      grid.innerHTML = '';
+      
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'pixel-cell w-12 h-12 flex items-center justify-center rounded-lg font-bold mono text-sm border-2 border-pink-600 bg-slate-800 transition-all';
+          cell.id = `output-cell-${i}-${j}`;
+          cell.textContent = '-';
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    // Reset functions
+    function resetHistogramImage() {
+      histogramImage = JSON.parse(JSON.stringify(defaultImageData));
+      initHistogramGrid();
+      document.getElementById('histCalcSteps').classList.add('hidden');
+      document.getElementById('histResultTable').classList.add('hidden');
+      clearHistogramChart();
+    }
+
+    function resetConvolutionImage() {
+      convolutionImage = JSON.parse(JSON.stringify(defaultImageData));
+      kernel = JSON.parse(JSON.stringify(defaultKernel));
+      outputImage = [[0,0,0],[0,0,0],[0,0,0]];
+      initConvolutionGrid();
+      initKernelGrid();
+      initOutputGrid();
+      document.getElementById('convCalcDisplay').classList.add('hidden');
+      document.getElementById('convAllSteps').classList.add('hidden');
+      document.getElementById('kernelOverlay').style.opacity = '0';
+    }
+
+    // Preset kernels
+    function setSharpnessKernel() {
+      kernel = [[0,-1,0],[-1,5,-1],[0,-1,0]];
+      initKernelGrid();
+    }
+
+    function setBlurKernel() {
+      kernel = [[1,1,1],[1,1,1],[1,1,1]];
+      initKernelGrid();
+    }
+
+    // Calculate histogram
+    function calculateHistogram() {
+      const hist = {};
+      const flatImage = histogramImage.flat();
+      
+      flatImage.forEach(val => {
+        hist[val] = (hist[val] || 0) + 1;
+      });
+      
+      return hist;
+    }
+
+    // Clear histogram chart
+    function clearHistogramChart() {
+      const chart = document.getElementById('histogramChart');
+      const labels = document.getElementById('histogramLabels');
+      
+      // Keep only axis labels
+      chart.innerHTML = `
+        <span class="absolute -left-8 top-0 text-xs text-gray-500">Frekuensi</span>
+        <span class="absolute bottom-[-25px] right-0 text-xs text-gray-500">Intensitas</span>
+      `;
+      labels.innerHTML = '';
+    }
+
+    // Draw histogram chart
+    function drawHistogramChart(histogram, animated = false) {
+      const chart = document.getElementById('histogramChart');
+      const labels = document.getElementById('histogramLabels');
+      
+      clearHistogramChart();
+      
+      const maxFreq = Math.max(...Object.values(histogram));
+      const sortedKeys = Object.keys(histogram).map(Number).sort((a, b) => a - b);
+      
+      sortedKeys.forEach((intensity, index) => {
+        const freq = histogram[intensity];
+        const heightPercent = (freq / maxFreq) * 100;
+        
+        const bar = document.createElement('div');
+        bar.className = 'histogram-bar w-8 md:w-10 rounded-t-lg transition-all cursor-pointer relative group';
+        bar.style.height = animated ? '0%' : `${heightPercent}%`;
+        bar.style.backgroundColor = `hsl(${200 + intensity * 8}, 70%, 50%)`;
+        
+        if (animated) {
+          setTimeout(() => {
+            bar.style.height = `${heightPercent}%`;
+          }, index * 150);
+        }
+        
+        // Tooltip
+        const tooltip = document.createElement('div');
+        tooltip.className = 'absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10';
+        tooltip.textContent = `${freq} pixel`;
+        bar.appendChild(tooltip);
+        
+        chart.appendChild(bar);
+        
+        // Label
+        const label = document.createElement('span');
+        label.className = 'w-8 md:w-10 text-center';
+        label.textContent = intensity;
+        labels.appendChild(label);
+      });
+    }
+
+    // Histogram animation
+    async function startHistogramAnimation() {
+      const stepsDiv = document.getElementById('histCalcSteps');
+      const stepsContent = document.getElementById('histStepsContent');
+      const tableDiv = document.getElementById('histResultTable');
+      
+      stepsDiv.classList.remove('hidden');
+      stepsContent.innerHTML = '';
+      tableDiv.classList.add('hidden');
+      clearHistogramChart();
+      
+      const histogram = {};
+      const flatImage = histogramImage.flat();
+      const cells = document.querySelectorAll('#histImageGrid input');
+      
+      stepsContent.innerHTML = '<p class="text-cyan-400">🔍 Memulai analisis histogram...</p>';
+      
+      for (let idx = 0; idx < flatImage.length; idx++) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        const val = flatImage[idx];
+        histogram[val] = (histogram[val] || 0) + 1;
+        
+        // Highlight current cell
+        cells[idx].classList.add('animate-highlight');
+        setTimeout(() => cells[idx].classList.remove('animate-highlight'), 500);
+        
+        const step = document.createElement('p');
+        step.innerHTML = `Pixel [${Math.floor(idx/5)},${idx%5}] = <span class="text-yellow-400">${val}</span> → Histogram[${val}] = <span class="text-green-400">${histogram[val]}</span>`;
+        stepsContent.appendChild(step);
+        stepsContent.scrollTop = stepsContent.scrollHeight;
+        
+        // Update chart progressively
+        drawHistogramChart(histogram, false);
+      }
+      
+      stepsContent.innerHTML += '<p class="text-emerald-400 mt-2">✅ Analisis histogram selesai!</p>';
+      showHistogramTable(histogram);
+    }
+
+    // Instant histogram calculation
+    function calculateHistogramInstant() {
+      const histogram = calculateHistogram();
+      drawHistogramChart(histogram, true);
+      
+      const stepsDiv = document.getElementById('histCalcSteps');
+      const stepsContent = document.getElementById('histStepsContent');
+      
+      stepsDiv.classList.remove('hidden');
+      stepsContent.innerHTML = '<p class="text-cyan-400">⚡ Perhitungan cepat histogram:</p>';
+      
+      Object.entries(histogram).sort((a,b) => Number(a[0]) - Number(b[0])).forEach(([intensity, freq]) => {
+        stepsContent.innerHTML += `<p>Intensitas <span class="text-yellow-400">${intensity}</span>: <span class="text-green-400">${freq}</span> pixel</p>`;
+      });
+      
+      showHistogramTable(histogram);
+    }
+
+    // Show histogram result table
+    function showHistogramTable(histogram) {
+      const tableDiv = document.getElementById('histResultTable');
+      const tbody = document.getElementById('histTableBody');
+      const totalPixels = 25;
+      
+      tableDiv.classList.remove('hidden');
+      tbody.innerHTML = '';
+      
+      Object.entries(histogram).sort((a,b) => Number(a[0]) - Number(b[0])).forEach(([intensity, freq]) => {
+        const percentage = ((freq / totalPixels) * 100).toFixed(1);
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-700/50 transition-colors';
+        row.innerHTML = `
+          <td class="px-3 py-2 font-mono">${intensity}</td>
+          <td class="px-3 py-2 font-mono text-green-400">${freq}</td>
+          <td class="px-3 py-2 font-mono text-blue-400">${percentage}%</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Convolution animation
+    async function startConvolutionAnimation() {
+      if (isAnimating) return;
+      isAnimating = true;
+      
+      const calcDisplay = document.getElementById('convCalcDisplay');
+      const calcContent = document.getElementById('convCalcContent');
+      const allStepsDiv = document.getElementById('convAllSteps');
+      const stepsContent = document.getElementById('convStepsContent');
+      const overlay = document.getElementById('kernelOverlay');
+      
+      calcDisplay.classList.remove('hidden');
+      allStepsDiv.classList.remove('hidden');
+      stepsContent.innerHTML = '';
+      
+      // Reset output grid
+      initOutputGrid();
+      outputImage = [[0,0,0],[0,0,0],[0,0,0]];
+      
+      overlay.style.opacity = '1';
+      overlay.classList.add('animate-kernel');
+      
+      const cellWidth = document.querySelector('#convImageGrid input').offsetWidth + 4;
+      
+      for (let oi = 0; oi < 3; oi++) {
+        for (let oj = 0; oj < 3; oj++) {
+          if (!isAnimating) {
+            overlay.style.opacity = '0';
+            return;
+          }
+          
+          // Move kernel overlay
+          overlay.style.left = `${oj * cellWidth}px`;
+          overlay.style.top = `${oi * cellWidth}px`;
+          
+          // Highlight input cells
+          for (let ki = 0; ki < 3; ki++) {
+            for (let kj = 0; kj < 3; kj++) {
+              const cell = document.getElementById(`conv-cell-${oi + ki}-${oj + kj}`);
+              if (cell) cell.style.borderColor = '#3b82f6';
+            }
+          }
+          
+          // Calculate convolution for this position
+          let sum = 0;
+          let calcStr = `<p class="text-purple-400 font-bold">📍 Posisi Output [${oi},${oj}]:</p>`;
+          let terms = [];
+          
+          for (let ki = 0; ki < 3; ki++) {
+            for (let kj = 0; kj < 3; kj++) {
+              const imgVal = convolutionImage[oi + ki][oj + kj];
+              const kernelVal = kernel[ki][kj];
+              const product = imgVal * kernelVal;
+              sum += product;
+              terms.push(`(${imgVal}×${kernelVal})`);
+            }
+          }
+          
+          calcStr += `<p class="text-gray-300">${terms.join(' + ')}</p>`;
+          calcStr += `<p class="text-yellow-400">= ${sum}</p>`;
+          
+          // Apply clipping (0-255)
+          const clippedSum = Math.max(0, Math.min(255, sum));
+          const wasClipped = sum !== clippedSum;
+          
+          if (wasClipped) {
+            calcStr += `<p class="text-red-400">⚠️ Clipping: ${sum} → <span class="text-green-400">${clippedSum}</span></p>`;
+          } else {
+            calcStr += `<p class="text-green-400">✓ Nilai final: ${clippedSum}</p>`;
+          }
+          
+          calcContent.innerHTML = calcStr;
+          
+          // Add to all steps
+          const stepDiv = document.createElement('div');
+          stepDiv.className = 'bg-slate-900/50 rounded-lg p-3 mb-2';
+          stepDiv.innerHTML = calcStr;
+          stepsContent.appendChild(stepDiv);
+          stepsContent.scrollTop = stepsContent.scrollHeight;
+          
+          // Update output cell
+          outputImage[oi][oj] = clippedSum;
+          const outputCell = document.getElementById(`output-cell-${oi}-${oj}`);
+          outputCell.textContent = clippedSum;
+          outputCell.style.backgroundColor = getOutputColor(clippedSum);
+          outputCell.style.color = '#fff';
+          outputCell.classList.add('animate-highlight');
+          
+          await new Promise(resolve => setTimeout(resolve, 800));
+          
+          // Reset highlight
+          for (let ki = 0; ki < 3; ki++) {
+            for (let kj = 0; kj < 3; kj++) {
+              const cell = document.getElementById(`conv-cell-${oi + ki}-${oj + kj}`);
+              if (cell) cell.style.borderColor = '#475569';
+            }
+          }
+        }
+      }
+      
+      overlay.classList.remove('animate-kernel');
+      overlay.style.opacity = '0';
+      isAnimating = false;
+      
+      calcContent.innerHTML = '<p class="text-emerald-400 font-bold">✅ Konvolusi selesai!</p>';
+    }
+
+    // Instant convolution calculation
+    function calculateConvolutionInstant() {
+      const allStepsDiv = document.getElementById('convAllSteps');
+      const stepsContent = document.getElementById('convStepsContent');
+      
+      allStepsDiv.classList.remove('hidden');
+      stepsContent.innerHTML = '';
+      
+      initOutputGrid();
+      outputImage = [[0,0,0],[0,0,0],[0,0,0]];
+      
+      for (let oi = 0; oi < 3; oi++) {
+        for (let oj = 0; oj < 3; oj++) {
+          let sum = 0;
+          let calcStr = `<p class="text-purple-400 font-bold">📍 Output [${oi},${oj}]:</p>`;
+          let terms = [];
+          
+          for (let ki = 0; ki < 3; ki++) {
+            for (let kj = 0; kj < 3; kj++) {
+              const imgVal = convolutionImage[oi + ki][oj + kj];
+              const kernelVal = kernel[ki][kj];
+              sum += imgVal * kernelVal;
+              if (kernelVal !== 0) {
+                terms.push(`(${imgVal}×${kernelVal})`);
+              }
+            }
+          }
+          
+          calcStr += `<p class="text-sm">${terms.join(' + ')} = <span class="text-yellow-400">${sum}</span></p>`;
+          
+          const clippedSum = Math.max(0, Math.min(255, sum));
+          if (sum !== clippedSum) {
+            calcStr += `<p class="text-red-400 text-sm">Clipping: ${sum} → <span class="text-green-400">${clippedSum}</span></p>`;
+          }
+          
+          outputImage[oi][oj] = clippedSum;
+          
+          const stepDiv = document.createElement('div');
+          stepDiv.className = 'bg-slate-900/50 rounded-lg p-2 inline-block mr-2 mb-2';
+          stepDiv.innerHTML = calcStr;
+          stepsContent.appendChild(stepDiv);
+          
+          const outputCell = document.getElementById(`output-cell-${oi}-${oj}`);
+          outputCell.textContent = clippedSum;
+          outputCell.style.backgroundColor = getOutputColor(clippedSum);
+          outputCell.style.color = '#fff';
+        }
+      }
+    }
+
+    // Stop animation
+    function stopAnimation() {
+      isAnimating = false;
+      const overlay = document.getElementById('kernelOverlay');
+      overlay.classList.remove('animate-kernel');
+      overlay.style.opacity = '0';
+    }
+
+    // Initialize everything on load
+    function initialize() {
+      initHistogramGrid();
+      initConvolutionGrid();
+      initKernelGrid();
+      initOutputGrid();
+    }
+
+    initialize();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9da3503d42aac649',t:'MTc3MzE1NjEzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
